@@ -1,0 +1,42 @@
+{
+  "name": "advent-of-code",
+  "version": "0.0.0",
+  "description": "Advent of Code solutions in Reason Native",
+  "esy": {
+    "build": "dune build -p <PACKAGE_NAME>",
+    "buildDev": "pesy",
+    "release": {
+      "releasedBinaries": [
+        "DayOne.exe"
+      ]
+    }
+  },
+  "buildDirs": {
+    "library": {
+      "name": "advent-of-code.lib",
+      "namespace": "AdventOfCode"
+    },
+    "solutions/day-01": {
+      "name": "Day01.exe",
+      "require": ["advent-of-code.lib", "core"]
+    },
+    "solutions/day-02": {
+      "name": "Day02.exe",
+      "require": ["advent-of-code.lib"]
+    }
+  },
+  "scripts": {
+    "pesy": "bash -c 'env PESY_MODE=update pesy'"
+  },
+  "dependencies": {
+    "@opam/core": "v0.13.0",
+    "@opam/dune": ">=1.6.0",
+    "@esy-ocaml/reason": "*",
+    "ocaml": "4.8.1000"
+  },
+  "devDependencies": {
+    "refmterr": "*",
+    "pesy": "*",
+    "@opam/merlin": "*"
+  }
+}
