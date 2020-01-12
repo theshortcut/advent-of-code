@@ -14,38 +14,48 @@ let commandFromInt = int => {
   };
 };
 
-let state =
+let input =
   "./solutions/day-02/input.txt"
   |> Core.In_channel.read_lines
   |> List.hd
   |> String.split_on_char(',')
-  |> List.map(int_of_string)
-  |> Array.of_list;
+  |> List.map(int_of_string);
 
-let runAddition = position => {
+let runAddition = (position, state) => {
   state[state[position + 3]] =
     state[state[position + 1]] + state[state[position + 2]];
 };
 
-let runMultiplication = position =>
+let runMultiplication = (position, state) =>
   state[state[position + 3]] =
     state[state[position + 1]] * state[state[position + 2]];
 
-let rec run = position => {
+let rec runCommand = (position, state) => {
   let command = commandFromInt(state[position]);
   switch (command) {
   | Add =>
-    runAddition(position);
-    run(position + 4);
+    runAddition(position, state);
+    runCommand(position + 4, state);
   | Multiply =>
-    runMultiplication(position);
-    run(position + 4);
+    runMultiplication(position, state);
+    runCommand(position + 4, state);
   | _ => ()
   };
 };
 
-state[1] = 12;
-state[2] = 2;
-run(0);
+let runProgram = (noun, verb) => {
+  let state = Array.of_list(input);
+  state[1] = noun;
+  state[2] = verb;
+  runCommand(0, state);
+  state[0];
+};
 
-Printf.printf("Position 0: %d\n", state[0]);
+for (noun in 0 to 99) {
+  for (verb in 0 to 99) {
+    let output = runProgram(noun, verb);
+    if (output == 19690720) {
+      Printf.printf("Solution: %d\n", 100 * noun + verb);
+    };
+  };
+};
