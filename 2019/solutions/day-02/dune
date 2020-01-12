@@ -7,5 +7,5 @@
    (name Index)  ;  From package.json main field
    ; The name of the executable (runnable via esy x Day02.exe) 
    (public_name Day02.exe)  ;  From package.json name field
-   (libraries  advent-of-code.lib ) ;  From package.json require field (array of strings)
+   (libraries  advent-of-code.lib core ) ;  From package.json require field (array of strings)
 )

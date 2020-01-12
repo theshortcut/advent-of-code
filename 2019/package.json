@@ -22,7 +22,7 @@
     },
     "solutions/day-02": {
       "name": "Day02.exe",
-      "require": ["advent-of-code.lib"]
+      "require": ["advent-of-code.lib", "core"]
     }
   },
   "scripts": {

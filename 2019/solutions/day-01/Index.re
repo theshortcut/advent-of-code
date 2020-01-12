@@ -16,5 +16,4 @@ let sumFuel = (fuelAcc, line) =>
 
 let totalFuel = file |> List.fold(~init=0, ~f=sumFuel);
 
-print_endline("Sum of fuel:");
-print_endline(totalFuel |> string_of_int);
+Printf.printf("Sum of fuel: %d\n", totalFuel);
