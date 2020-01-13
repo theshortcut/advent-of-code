@@ -27,6 +27,10 @@
     "solutions/day-03": {
       "name": "Day03.exe",
       "require": ["advent-of-code.lib", "core"]
+    },
+    "solutions/day-04": {
+      "name": "Day04.exe",
+      "require": ["advent-of-code.lib", "core"]
     }
   },
   "scripts": {
