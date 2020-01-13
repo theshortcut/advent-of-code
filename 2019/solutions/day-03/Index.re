@@ -8,18 +8,7 @@ exception UnknownDirection;
 
 type coord = (int, int);
 
-module CoordSet =
-  Set.Make({
-    type t = coord;
-    let compare = (a, b) =>
-      if (a == b) {
-        0;
-      } else if (a > b) {
-        1;
-      } else {
-        (-1);
-      };
-  });
+module CoordMap = Map.Make(String);
 
 let stringToDirection = str => {
   let length = String.length(str);
@@ -39,36 +28,27 @@ let lineToDirections = str => {
 };
 
 let directionsToCoordMap = dirs => {
-  let coordSet = ref(CoordSet.empty);
+  let coordMap = ref(CoordMap.empty);
   let x = ref(0);
   let y = ref(0);
-  let addCoord = () => coordSet := CoordSet.add((x^, y^), coordSet^);
+  let steps = ref(0);
+  let coordToString = () => string_of_int(x^) ++ "," ++ string_of_int(y^);
+  let addCoord = () =>
+    coordMap := CoordMap.add(coordToString(), steps^, coordMap^);
   dirs
   |> List.iter(((direction, distance)) => {
-       switch (direction) {
-       | Up =>
-         for (_ in 1 to distance) {
-           y := y^ + 1;
-           addCoord();
-         }
-       | Down =>
-         for (_ in 1 to distance) {
-           y := y^ - 1;
-           addCoord();
-         }
-       | Left =>
-         for (_ in 1 to distance) {
-           x := x^ - 1;
-           addCoord();
-         }
-       | Right =>
-         for (_ in 1 to distance) {
-           x := x^ + 1;
-           addCoord();
-         }
+       for (_ in 1 to distance) {
+         steps := steps^ + 1;
+         switch (direction) {
+         | Up => y := y^ + 1
+         | Down => y := y^ - 1
+         | Left => x := x^ - 1
+         | Right => x := x^ + 1
+         };
+         addCoord();
        }
      });
-  coordSet^;
+  coordMap^;
 };
 
 let wires =
@@ -76,16 +56,21 @@ let wires =
   |> Core.In_channel.read_lines
   |> List.map(lineToDirections);
 
-let firstCoordSet = wires |> List.hd |> directionsToCoordMap;
-let secondCoordSet = List.nth(wires, 1) |> directionsToCoordMap;
+let firstCoordMap = wires |> List.hd |> directionsToCoordMap;
+let secondCoordMap = List.nth(wires, 1) |> directionsToCoordMap;
 
-CoordSet.inter(firstCoordSet, secondCoordSet)
-|> CoordSet.fold(
-     ((x, y), smallestDistance) => {
-       let distance = abs(x) + abs(y);
-       distance < smallestDistance ? distance : smallestDistance;
+firstCoordMap
+|> CoordMap.fold(
+     (coord, firstSteps, smallestSteps) => {
+       let secondStepsOpt = secondCoordMap |> CoordMap.find_opt(coord);
+       switch (secondStepsOpt) {
+       | Some(secondSteps) =>
+         let steps = firstSteps + secondSteps;
+         steps < smallestSteps ? steps : smallestSteps;
+       | None => smallestSteps
+       };
      },
      _,
      Int.max_int,
    )
-|> Printf.printf("Distance: %d");
+|> Printf.printf("Steps: %d\n");
