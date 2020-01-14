@@ -1,14 +1,31 @@
 let validCount = ref(0);
 
-let hasAdjacentDigits = indexedDigits =>
+let hasOnlyTwoAdjacentDigits = indexedDigits =>
   indexedDigits
-  |> List.find_opt(((i, digit)) => {
-       switch (List.nth_opt(indexedDigits, i + 1)) {
-       | Some((_, nextDigit)) => nextDigit == digit
-       | None => false
-       }
-     })
-  |> Option.is_some;
+  |> List.fold_left(
+       (valid, (i, digit)) =>
+         if (i > 0) {
+           let prevDigitOpt = List.nth_opt(indexedDigits, i - 1);
+           let nextDigitOpt = List.nth_opt(indexedDigits, i + 1);
+           let lookaheadOpt = List.nth_opt(indexedDigits, i + 2);
+           switch (prevDigitOpt, nextDigitOpt, lookaheadOpt) {
+           | (Some((_, prev)), Some((_, next)), Some((_, lookAhead))) =>
+             if (prev == digit && next != digit && i == 1) {
+               true;
+             } else if (prev != digit && next == digit && lookAhead != digit) {
+               true;
+             } else {
+               valid;
+             }
+           | (Some((_, prev)), Some((_, next)), None) =>
+             prev != digit && next == digit ? true : valid
+           | _ => valid
+           };
+         } else {
+           valid;
+         },
+       false,
+     );
 
 let neverDecreases = indexedDigits =>
   indexedDigits
@@ -30,7 +47,7 @@ let validate = password => {
     |> List.map(int_of_char)
     |> List.mapi((i, d) => (i, d));
 
-  hasAdjacentDigits(indexedDigits) && neverDecreases(indexedDigits);
+  hasOnlyTwoAdjacentDigits(indexedDigits) && neverDecreases(indexedDigits);
 };
 
 for (candidate in 235741 to 706948) {
