@@ -5,6 +5,10 @@ type command =
   | Multiply
   | Input
   | Output
+  | JumpIfTrue
+  | JumpIfFalse
+  | LessThan
+  | Equals
   | Halt;
 
 type parameterMode =
@@ -37,6 +41,10 @@ let commandFromInt = (int, paramModes) => {
   | 2 => (Multiply, parameterModesFromList(paramModes, 3))
   | 3 => (Input, [Position])
   | 4 => (Output, parameterModesFromList(paramModes, 1))
+  | 5 => (JumpIfTrue, parameterModesFromList(paramModes, 2))
+  | 6 => (JumpIfFalse, parameterModesFromList(paramModes, 2))
+  | 7 => (LessThan, parameterModesFromList(paramModes, 3))
+  | 8 => (Equals, parameterModesFromList(paramModes, 3))
   | 99 => (Halt, [])
   | _ => raise(UnknownCommand)
   };
@@ -69,7 +77,7 @@ let runMultiplication = (position, parameterModes, state) => {
 
 let runInput = (position, state) => {
   let out = getPointer(position + 1, Position, state);
-  state[out] = 1;
+  state[out] = 5;
 };
 
 let runOutput = (position, parameterModes, state) => {
@@ -78,6 +86,34 @@ let runOutput = (position, parameterModes, state) => {
     "Output: %d\n",
     state[getPointer(position + 1, pMode(0), state)],
   );
+};
+
+let runJumpIfTrue = (position, parameterModes, state) => {
+  let pMode = List.nth(parameterModes);
+  state[getPointer(position + 1, pMode(0), state)] == 0
+    ? position + 3 : state[getPointer(position + 2, pMode(1), state)];
+};
+
+let runJumpIfFalse = (position, parameterModes, state) => {
+  let pMode = List.nth(parameterModes);
+  state[getPointer(position + 1, pMode(0), state)] == 0
+    ? state[getPointer(position + 2, pMode(1), state)] : position + 3;
+};
+
+let runLessThan = (position, parameterModes, state) => {
+  let pMode = List.nth(parameterModes);
+  let in1 = getPointer(position + 1, pMode(0), state);
+  let in2 = getPointer(position + 2, pMode(1), state);
+  let out = getPointer(position + 3, pMode(2), state);
+  state[out] = state[in1] < state[in2] ? 1 : 0;
+};
+
+let runEquals = (position, parameterModes, state) => {
+  let pMode = List.nth(parameterModes);
+  let in1 = getPointer(position + 1, pMode(0), state);
+  let in2 = getPointer(position + 2, pMode(1), state);
+  let out = getPointer(position + 3, pMode(2), state);
+  state[out] = state[in1] == state[in2] ? 1 : 0;
 };
 
 let rec runCommand = (position, state) => {
@@ -103,6 +139,16 @@ let rec runCommand = (position, state) => {
   | (Output, parameterModes) =>
     runOutput(position, parameterModes, state);
     runCommand(position + 2, state);
+  | (JumpIfTrue, parameterModes) =>
+    runCommand(runJumpIfTrue(position, parameterModes, state), state)
+  | (JumpIfFalse, parameterModes) =>
+    runCommand(runJumpIfFalse(position, parameterModes, state), state)
+  | (LessThan, parameterModes) =>
+    runLessThan(position, parameterModes, state);
+    runCommand(position + 4, state);
+  | (Equals, parameterModes) =>
+    runEquals(position, parameterModes, state);
+    runCommand(position + 4, state);
   | _ => Printf.printf("Halting at %d\n", position)
   };
 };
