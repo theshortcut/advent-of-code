@@ -34,7 +34,6 @@ pub fn part1(i: &String) -> i64 {
 }
 
 struct Rule {
-  field_name: String,
   ranges: Vec<Range<i64>>,
 }
 
@@ -44,7 +43,6 @@ fn parse(i: &String) -> (Vec<Rule>, Vec<i64>, Vec<Vec<i64>>) {
     .split("\n")
     .map(|line| {
       let parts: Vec<&str> = line.split(":").collect();
-      let field_name = parts[0].into();
       let ranges = parts[1]
         .split("or")
         .map(|range_str| {
@@ -55,7 +53,7 @@ fn parse(i: &String) -> (Vec<Rule>, Vec<i64>, Vec<Vec<i64>>) {
           start_end[0]..(start_end[1] + 1)
         })
         .collect();
-      Rule { field_name, ranges }
+      Rule { ranges }
     })
     .collect();
   let my_ticket = parts[1]
