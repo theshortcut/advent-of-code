@@ -25,77 +25,78 @@ use regex::Regex;
 /// assert_eq!(result, 2);
 /// ```
 pub fn part1(i: &String) -> usize {
-    let docs = parse(i);
-    docs.iter()
-        .filter(|d| {
-            [&d.byr, &d.iyr, &d.eyr, &d.hgt, &d.hcl, &d.ecl, &d.pid]
-                .iter()
-                .all(|v| v.is_some())
-        })
-        .count()
+  let docs = parse(i);
+  docs
+    .iter()
+    .filter(|d| {
+      [&d.byr, &d.iyr, &d.eyr, &d.hgt, &d.hcl, &d.ecl, &d.pid]
+        .iter()
+        .all(|v| v.is_some())
+    })
+    .count()
 }
 
 #[derive(Debug, Default)]
 struct DocumentBatch {
-    byr: Option<String>,
-    iyr: Option<String>,
-    eyr: Option<String>,
-    hgt: Option<String>,
-    hcl: Option<String>,
-    ecl: Option<String>,
-    pid: Option<String>,
-    cid: Option<String>,
+  byr: Option<String>,
+  iyr: Option<String>,
+  eyr: Option<String>,
+  hgt: Option<String>,
+  hcl: Option<String>,
+  ecl: Option<String>,
+  pid: Option<String>,
+  cid: Option<String>,
 }
 
 fn parse(i: &String) -> Vec<DocumentBatch> {
-    i.split("\n\n")
-        .map(|batch| {
-            batch
-                .replace("\n", " ")
-                .split(" ")
-                .fold(Default::default(), |doc, fields| {
-                    let key_value: Vec<&str> = fields.split(":").collect();
-                    if key_value.len() != 2 {
-                        return doc;
-                    }
-                    match (key_value[0], key_value[1]) {
-                        ("byr", val) => DocumentBatch {
-                            byr: Some(val.into()),
-                            ..doc
-                        },
-                        ("iyr", val) => DocumentBatch {
-                            iyr: Some(val.into()),
-                            ..doc
-                        },
-                        ("eyr", val) => DocumentBatch {
-                            eyr: Some(val.into()),
-                            ..doc
-                        },
-                        ("hgt", val) => DocumentBatch {
-                            hgt: Some(val.into()),
-                            ..doc
-                        },
-                        ("hcl", val) => DocumentBatch {
-                            hcl: Some(val.into()),
-                            ..doc
-                        },
-                        ("ecl", val) => DocumentBatch {
-                            ecl: Some(val.into()),
-                            ..doc
-                        },
-                        ("pid", val) => DocumentBatch {
-                            pid: Some(val.into()),
-                            ..doc
-                        },
-                        ("cid", val) => DocumentBatch {
-                            cid: Some(val.into()),
-                            ..doc
-                        },
-                        _ => doc,
-                    }
-                })
+  i.split("\n\n")
+    .map(|batch| {
+      batch
+        .replace("\n", " ")
+        .split(" ")
+        .fold(Default::default(), |doc, fields| {
+          let key_value: Vec<&str> = fields.split(":").collect();
+          if key_value.len() != 2 {
+            return doc;
+          }
+          match (key_value[0], key_value[1]) {
+            ("byr", val) => DocumentBatch {
+              byr: Some(val.into()),
+              ..doc
+            },
+            ("iyr", val) => DocumentBatch {
+              iyr: Some(val.into()),
+              ..doc
+            },
+            ("eyr", val) => DocumentBatch {
+              eyr: Some(val.into()),
+              ..doc
+            },
+            ("hgt", val) => DocumentBatch {
+              hgt: Some(val.into()),
+              ..doc
+            },
+            ("hcl", val) => DocumentBatch {
+              hcl: Some(val.into()),
+              ..doc
+            },
+            ("ecl", val) => DocumentBatch {
+              ecl: Some(val.into()),
+              ..doc
+            },
+            ("pid", val) => DocumentBatch {
+              pid: Some(val.into()),
+              ..doc
+            },
+            ("cid", val) => DocumentBatch {
+              cid: Some(val.into()),
+              ..doc
+            },
+            _ => doc,
+          }
         })
-        .collect()
+    })
+    .collect()
 }
 
 /// Now with more complex validation per field
@@ -146,64 +147,64 @@ fn parse(i: &String) -> Vec<DocumentBatch> {
 /// assert_eq!(part2(&invalid), 0);
 /// ```
 pub fn part2(i: &String) -> usize {
-    let docs = parse(i);
-    docs.iter().filter(|d| is_valid(d)).count()
+  let docs = parse(i);
+  docs.iter().filter(|d| is_valid(d)).count()
 }
 
 fn is_valid(doc: &DocumentBatch) -> bool {
-    match doc {
-        DocumentBatch {
-            byr: Some(byr),
-            iyr: Some(iyr),
-            eyr: Some(eyr),
-            hgt: Some(hgt),
-            hcl: Some(hcl),
-            ecl: Some(ecl),
-            pid: Some(pid),
-            cid: _,
-        } => {
-            is_valid_year(byr, 1920, 2002)
-                && is_valid_year(iyr, 2010, 2020)
-                && is_valid_year(eyr, 2020, 2030)
-                && is_valid_hgt(hgt)
-                && is_valid_hcl(hcl)
-                && is_valid_ecl(ecl)
-                && is_valid_pid(pid)
-        }
-        _ => false,
+  match doc {
+    DocumentBatch {
+      byr: Some(byr),
+      iyr: Some(iyr),
+      eyr: Some(eyr),
+      hgt: Some(hgt),
+      hcl: Some(hcl),
+      ecl: Some(ecl),
+      pid: Some(pid),
+      cid: _,
+    } => {
+      is_valid_year(byr, 1920, 2002)
+        && is_valid_year(iyr, 2010, 2020)
+        && is_valid_year(eyr, 2020, 2030)
+        && is_valid_hgt(hgt)
+        && is_valid_hcl(hcl)
+        && is_valid_ecl(ecl)
+        && is_valid_pid(pid)
     }
+    _ => false,
+  }
 }
 
 fn is_valid_year(i: &str, min: i32, max: i32) -> bool {
-    let year: i32 = i.parse().ok().unwrap_or(0);
-    year >= min && year <= max
+  let year: i32 = i.parse().ok().unwrap_or(0);
+  year >= min && year <= max
 }
 
 fn is_valid_hgt(i: &str) -> bool {
-    let re = Regex::new(r"^(\d{2,3})(cm|in)$").unwrap();
-    if let Some(caps) = re.captures(i) {
-        let measurement: i32 = caps.get(1).unwrap().as_str().parse().ok().unwrap_or(0);
-        let units = caps.get(2).unwrap().as_str();
-        if units == "cm" {
-            return measurement >= 150 && measurement <= 193;
-        }
-        return measurement >= 59 && measurement <= 76;
-    } else {
-        false
+  let re = Regex::new(r"^(\d{2,3})(cm|in)$").unwrap();
+  if let Some(caps) = re.captures(i) {
+    let measurement: i32 = caps.get(1).unwrap().as_str().parse().ok().unwrap_or(0);
+    let units = caps.get(2).unwrap().as_str();
+    if units == "cm" {
+      return measurement >= 150 && measurement <= 193;
     }
+    return measurement >= 59 && measurement <= 76;
+  } else {
+    false
+  }
 }
 
 fn is_valid_hcl(i: &str) -> bool {
-    let re = Regex::new(r"^#[0-9,a-f]{6}$").unwrap();
-    re.is_match(i)
+  let re = Regex::new(r"^#[0-9,a-f]{6}$").unwrap();
+  re.is_match(i)
 }
 
 fn is_valid_ecl(i: &str) -> bool {
-    let re = Regex::new(r"^(amb|blu|brn|gry|grn|hzl|oth)$").unwrap();
-    re.is_match(i)
+  let re = Regex::new(r"^(amb|blu|brn|gry|grn|hzl|oth)$").unwrap();
+  re.is_match(i)
 }
 
 fn is_valid_pid(i: &str) -> bool {
-    let re = Regex::new(r"^\d{9}$").unwrap();
-    re.is_match(i)
+  let re = Regex::new(r"^\d{9}$").unwrap();
+  re.is_match(i)
 }

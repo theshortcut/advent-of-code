@@ -11,13 +11,13 @@
 /// assert_eq!(result, 13632);
 /// ```
 pub fn part1(i: &String) -> i64 {
-    i.split("\n")
-        .filter_map(|line| match line.trim().len() {
-            0 => None,
-            _ => Some(arithmetic::parens_priority(line)),
-        })
-        .sum::<Result<i64, _>>()
-        .unwrap()
+  i.split("\n")
+    .filter_map(|line| match line.trim().len() {
+      0 => None,
+      _ => Some(arithmetic::parens_priority(line)),
+    })
+    .sum::<Result<i64, _>>()
+    .unwrap()
 }
 
 /// Now addition has precedence over multiplication
@@ -32,13 +32,13 @@ pub fn part1(i: &String) -> i64 {
 /// assert_eq!(result, 13632);
 /// ```
 pub fn part2(i: &String) -> i64 {
-    i.split("\n")
-        .filter_map(|line| match line.trim().len() {
-            0 => None,
-            _ => Some(arithmetic::parens_addition_priority(line)),
-        })
-        .sum::<Result<i64, _>>()
-        .unwrap()
+  i.split("\n")
+    .filter_map(|line| match line.trim().len() {
+      0 => None,
+      _ => Some(arithmetic::parens_addition_priority(line)),
+    })
+    .sum::<Result<i64, _>>()
+    .unwrap()
 }
 
 peg::parser! {
