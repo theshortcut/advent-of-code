@@ -8,34 +8,13 @@ fn parse_input_day1(input: &str) -> Result<Vec<i32>, ParseIntError> {
 
 #[aoc(day1, part1)]
 fn part1(i: &[i32]) -> usize {
-  i.iter()
-    .enumerate()
-    .filter(|(idx, depth)| match i.get(idx + 1) {
-      Some(next_depth) => *depth < next_depth,
-      None => false,
-    })
-    .count()
+  i.windows(2).filter(|pair| pair[0] < pair[1]).count()
 }
 
 #[aoc(day1, part2)]
 fn part2(i: &[i32]) -> usize {
-  // create 3 element sums
-  let sums: Vec<i32> = i
-    .iter()
-    .enumerate()
-    .filter_map(|(idx, depth_a)| match (i.get(idx + 1), i.get(idx + 2)) {
-      (Some(depth_b), Some(depth_c)) => Some(depth_a + depth_b + depth_c),
-      _ => None,
-    })
-    .collect();
-  sums
-    .iter()
-    .enumerate()
-    .filter(|(idx, depth)| match sums.get(idx + 1) {
-      Some(next_depth) => *depth < next_depth,
-      None => false,
-    })
-    .count()
+  let sums: Vec<i32> = i.windows(3).map(|triple| triple.iter().sum()).collect();
+  sums.windows(2).filter(|pair| pair[0] < pair[1]).count()
 }
 
 #[cfg(test)]
