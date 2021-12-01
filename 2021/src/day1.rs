@@ -20,20 +20,15 @@ fn part2(i: &[i32]) -> usize {
 #[cfg(test)]
 mod tests {
   use super::*;
+  const TEST_INPUT: &[i32] = &[199, 200, 208, 210, 200, 207, 240, 269, 260, 263];
 
   #[test]
   fn part1_example() {
-    assert_eq!(
-      part1(&[199, 200, 208, 210, 200, 207, 240, 269, 260, 263]),
-      7
-    )
+    assert_eq!(part1(TEST_INPUT), 7)
   }
 
   #[test]
   fn part2_example() {
-    assert_eq!(
-      part2(&[199, 200, 208, 210, 200, 207, 240, 269, 260, 263]),
-      5
-    )
+    assert_eq!(part2(TEST_INPUT), 5)
   }
 }
